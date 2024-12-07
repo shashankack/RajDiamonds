@@ -1,0 +1,43 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../build/Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_DB=RajDiamonds
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin123
+      - DATABASE_URL=postgres://admin:admin123@postgres:5432/RajDiamonds
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    command: python manage.py runserver 0.0.0.0:8000
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../build/Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    #command: tail -f /dev/null
+    command: npm run dev
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: RajDiamonds
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
