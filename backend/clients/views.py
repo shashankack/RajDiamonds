@@ -3,8 +3,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Client
 from .serializers import ClientSerializer
+from rest_framework.permissions import IsAuthenticated
 
 class ClientAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, client_id=None):
         if client_id:
             client = Client.objects.get(pk=client_id)

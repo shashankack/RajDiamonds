@@ -1,7 +1,17 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+
+class User(AbstractUser):
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=100, unique=True)
+    REQUIRED_FIELDS = ['username']
+    USERNAME_FIELD = 'email'
+
+    def __str__(self):
+        return self.username
 
 class Client(models.Model):
-    
     firstName = models.CharField(max_length=100)
     lastName = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
