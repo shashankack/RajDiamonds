@@ -1,11 +1,14 @@
 import "./App.css";
-import Dashboard from "./components/Dashboard.jsx";
+import { BrowserRouter as Router } from 'react-router-dom';
+import Routes from "./Routes";
 
 function App() {
   return (
-    <>
-      <Dashboard />
-    </>
+    <Router>
+      <>
+        <Routes />
+      </>
+    </Router>
   );
 }
 
