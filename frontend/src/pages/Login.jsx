@@ -1,41 +1,107 @@
-import React from 'react'
-import api from '../utils/api'
-import { setAccessToken, setRefreshToken } from '../utils/auth'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  CssBaseline,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Alert,
+  Grid,
+} from "@mui/material";
 
-const Login = () => {
-    const [email, setEmail] = React.useState('');
-    const [password, setPassword] = React.useState('');
-    const [error, setError] = React.useState('');
-    const [loading, setLoading] = React.useState(false);
-    const nav = useNavigate();
+const Login = ({ setAuthorized }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
+  const nav = useNavigate();
 
-    const handleEmailChange = (event) => {
-        setEmail(event.target.value);
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(
+        "https://rajdiamonds-backend.onrender.com/api/v1/token/",
+        {
+          email,
+          password,
+        }
+      );
+      const { access, refresh } = response.data;
+      localStorage.setItem("access_token", access);
+      localStorage.setItem("refresh_token", refresh);
+      setAuthorized(true);
+      nav("/home");
+    } catch (err) {
+      setError("Invalid credentials. Please try again.");
     }
-
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
-    }
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        api.post('token/', {email, password})
-            .then(response => {
-            setAccessToken(response.data.access);
-            setRefreshToken(response.data.refresh);
-            nav('/home');
-        })
-        .catch(error => {
-            setError('Invalid credentials');
-        });
-    };
-
+  };
 
   return (
-    <div>Login</div>
-  )
-}
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          Login
+        </Typography>
+        <Box
+          component="form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+          noValidate
+          sx={{ mt: 1 }}
+        >
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email"
+            name="email"
+            autoComplete="off"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Login
+          </Button>
+        </Box>
+      </Box>
+    </Container>
+  );
+};
 
-export default Login
+export default Login;

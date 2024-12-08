@@ -1,60 +1,56 @@
-import axios from "axios";
-import { refreshAccessToken, clearTokens } from "./auth";
+import axiosInstance from './axiosInstance';
 
-
-const BASE_URL = 'http://localhost:8000/api/v1/';
-
-export const getClientData = () => axios.get(`${BASE_URL}client-data/`);
-export const getClientDetails = (client_id) => api.get(`${BASE_URL}client-data/${client_id}/`);
-export const createClient = (client_data) => api.post(`${BASE_URL}client-data/`, client_data);
-export const updateClient = (client_id, client_data) => api.put(`${BASE_URL}client-data/${client_id}/`, client_data);
-export const deleteClient = (client_id) => api.delete(`${BASE_URL}client-data/${client_id}/`);
-
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  timeout: 5000,
-});
-
-api.interceptors.request.use(
-  (config) => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+// Fetch data for all clients
+export const getClientData = async () => {
+  try {
+    const response = await axiosInstance.get('/client-data/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching clients:', error);
+    throw error;
   }
-);
+};
 
-api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
-    if (
-      error.response &&
-      error.response.status === 401 &&
-      !originalRequest._retry
-    ) {
-      originalRequest._retry = true;
-      try {
-        await refreshAccessToken(); // Call your refresh token function
-        const newAccessToken = localStorage.getItem("accessToken");
-        if (newAccessToken) {
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        }
-        return api(originalRequest); // Retry the original request with the new token
-      } catch (refreshError) {
-        clearTokens(); // Call your logout function
-        window.location.href = "/login"; // Redirect to login page
-      }
-    }
-    return Promise.reject(error);
+// Fetch details of a specific client by ID
+export const getClientDetails = async (clientId) => {
+  try {
+    const response = await axiosInstance.get(`/client-data/${clientId}/`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching details for client ${clientId}:`, error);
+    throw error;
   }
-);
+};
 
-export default api;
+// Create a new client
+export const createClient = async (clientData) => {
+  try {
+    const response = await axiosInstance.post('/client-data/', clientData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating client:', error);
+    throw error;
+  }
+};
+
+// Update an existing client by ID
+export const updateClient = async (clientId, clientData) => {
+  try {
+    const response = await axiosInstance.put(`/client-data/${clientId}/`, clientData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating client ${clientId}:`, error);
+    throw error;
+  }
+};
+
+// Delete a client by ID
+export const deleteClient = async (clientId) => {
+  try {
+    const response = await axiosInstance.delete(`/client-data/${clientId}/`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error deleting client ${clientId}:`, error);
+    throw error;
+  }
+};

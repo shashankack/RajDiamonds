@@ -28,8 +28,7 @@ import {
   DialogTitle,
   IconButton,
 } from "@mui/material";
-import Grid from '@mui/material/Grid2';
-
+import Grid from "@mui/material/Grid";
 import { Delete } from "@mui/icons-material";
 
 const Dashboard = () => {
@@ -56,13 +55,14 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
+      setLoading(true);
       try {
-        const response = await getClientData();
-        setUsers(response.data);
-        setFilteredUsers(response.data); // Initialize filtered users with the full list
-        setLoading(false);
+        const data = await getClientData();
+        setUsers(data);
+        setFilteredUsers(data); // Initialize filtered users with the full list
       } catch (err) {
         setError("Failed to fetch users. Please try again later.");
+      } finally {
         setLoading(false);
       }
     };
@@ -75,12 +75,11 @@ const Dashboard = () => {
     const query = e.target.value.toLowerCase();
     setSearchQuery(query);
 
-    // Filter users based on firstName, lastName, phone, or email
     const filtered = users.filter(
       (user) =>
         user.firstName.toLowerCase().includes(query) ||
         user.lastName.toLowerCase().includes(query) ||
-        (user.firstName + " " + user.lastName).toLowerCase().includes(query) ||
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(query) ||
         user.phone.includes(query) ||
         user.email.toLowerCase().includes(query)
     );
@@ -130,21 +129,22 @@ const Dashboard = () => {
   const handleSubmit = async () => {
     if (dialogMode === "add") {
       try {
-        const response = await createClient(formData);
-        setUsers([...users, response.data]); // Add the new user to the state
-        setFilteredUsers([...users, response.data]); // Update filtered users
+        const data = await createClient(formData);
+        const updatedUsers = [...users, data];
+        setUsers(updatedUsers);
+        setFilteredUsers(updatedUsers);
         closeDialog();
       } catch (err) {
         alert("Failed to create user.");
       }
     } else if (dialogMode === "update") {
       try {
-        const response = await updateClient(formData.id, formData);
+        const data = await updateClient(formData.id, formData);
         const updatedUsers = users.map((user) =>
-          user.id === response.data.id ? response.data : user
+          user.id === data.id ? data : user
         );
         setUsers(updatedUsers);
-        setFilteredUsers(updatedUsers); // Update filtered users
+        setFilteredUsers(updatedUsers);
         closeDialog();
       } catch (err) {
         alert("Failed to update user.");
@@ -154,7 +154,7 @@ const Dashboard = () => {
         await deleteClient(formData.id);
         const updatedUsers = users.filter((user) => user.id !== formData.id);
         setUsers(updatedUsers);
-        setFilteredUsers(updatedUsers); // Update filtered users
+        setFilteredUsers(updatedUsers);
         closeDialog();
       } catch (err) {
         alert("Failed to delete user.");
@@ -165,8 +165,8 @@ const Dashboard = () => {
   // Handle row click for viewing user details
   const handleRowClick = async (id) => {
     try {
-      const response = await getClientDetails(id);
-      openDialog("view", response.data);
+      const data = await getClientDetails(id);
+      openDialog("view", data);
     } catch (err) {
       alert("Failed to fetch user details.");
     }
@@ -267,7 +267,6 @@ const Dashboard = () => {
         </Table>
       </TableContainer>
 
-      {/* Shared Dialog */}
       <Dialog open={dialogOpen} onClose={closeDialog}>
         <DialogTitle>
           {dialogMode === "add"
@@ -281,7 +280,7 @@ const Dashboard = () => {
         <DialogContent>
           {dialogMode === "delete" ? (
             <Typography>
-              Are you sure you want to delete the user{" "}
+              Are you sure you want to delete{" "}
               <strong>
                 {formData.firstName} {formData.lastName}
               </strong>
@@ -296,7 +295,7 @@ const Dashboard = () => {
                   fullWidth
                   value={formData.firstName}
                   onChange={handleChange}
-                  disabled={dialogMode === "view" || dialogMode === "delete"}
+                  disabled={dialogMode === "view"}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -306,7 +305,7 @@ const Dashboard = () => {
                   fullWidth
                   value={formData.lastName}
                   onChange={handleChange}
-                  disabled={dialogMode === "view" || dialogMode === "delete"}
+                  disabled={dialogMode === "view"}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -316,7 +315,7 @@ const Dashboard = () => {
                   fullWidth
                   value={formData.phone}
                   onChange={handleChange}
-                  disabled={dialogMode === "view" || dialogMode === "delete"}
+                  disabled={dialogMode === "view"}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -326,7 +325,7 @@ const Dashboard = () => {
                   fullWidth
                   value={formData.sales}
                   onChange={handleChange}
-                  disabled={dialogMode === "view" || dialogMode === "delete"}
+                  disabled={dialogMode === "view"}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -336,7 +335,7 @@ const Dashboard = () => {
                   fullWidth
                   value={formData.email}
                   onChange={handleChange}
-                  disabled={dialogMode === "view" || dialogMode === "delete"}
+                  disabled={dialogMode === "view"}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -346,7 +345,7 @@ const Dashboard = () => {
                   fullWidth
                   value={formData.address}
                   onChange={handleChange}
-                  disabled={dialogMode === "view" || dialogMode === "delete"}
+                  disabled={dialogMode === "view"}
                 />
               </Grid>
             </Grid>
