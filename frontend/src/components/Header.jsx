@@ -17,9 +17,16 @@ const Header = ({ onToggleDarkMode, darkMode }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            News
+            Raj Diamonds
           </Typography>
           <Button color="inherit" onClick={onToggleDarkMode} >{ darkMode ? 'Ligh Mode' : 'Dark Mode' }</Button>
+          <Button color="inherit" onClick={
+            () => {
+              localStorage.removeItem('access_token')
+              localStorage.removeItem('refresh_token')
+              window.location.reload()
+            }
+          }>Logout</Button>
         </Toolbar>
       </AppBar>
     </Box>

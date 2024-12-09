@@ -10,18 +10,28 @@ import Home from "./pages/Home";
 import PrivateRoute from "./utils/PrivateRoute";
 import Header from "./components/Header";
 import { ThemeProvider, createTheme } from "@mui/material";
-import theme from "./assets/theme";
 import CssBaseline from "@mui/material/CssBaseline";
 
 const App = () => {
   const [isAuthorized, setAuthorized] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("themeMode");
+    if (savedTheme === "dark") {
+      setDarkMode(savedTheme === "dark");
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("themeMode", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
   const theme = createTheme({
     palette: {
-      mode: darkMode ? 'dark' : 'light',
+      mode: darkMode ? "dark" : "light",
       primary: {
-        main: darkMode ? '#bb86fc' : '#1976d2',
+        main: darkMode ? "#bb86fc" : "#1976d2",
       },
     },
   });
@@ -29,7 +39,6 @@ const App = () => {
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
-
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");

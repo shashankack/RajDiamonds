@@ -9,21 +9,23 @@ import {
   TextField,
   Button,
   Alert,
-  Grid,
+  LinearProgress,
 } from "@mui/material";
 
 const Login = ({ setAuthorized }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const nav = useNavigate();
 
   const handleLogin = async () => {
+    setLoading(true);
+    setError("");
     try {
       const response = await axios.post(
         "https://rajdiamonds-backend.onrender.com/api/v1/token/",
-        /* "http://localhost:8000/api/v1/token/", */
         {
           email,
           password,
@@ -36,6 +38,8 @@ const Login = ({ setAuthorized }) => {
       nav("/home");
     } catch (err) {
       setError("Invalid credentials. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,6 +57,14 @@ const Login = ({ setAuthorized }) => {
         <Typography component="h1" variant="h5">
           Login
         </Typography>
+        {loading && (
+          <LinearProgress
+            sx={{
+              width: "100%",
+              mt: 2,
+            }}
+          />
+        )}
         <Box
           component="form"
           onSubmit={(e) => {
@@ -96,8 +108,9 @@ const Login = ({ setAuthorized }) => {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging In..." : "Login"}
           </Button>
         </Box>
       </Box>

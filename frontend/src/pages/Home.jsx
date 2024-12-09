@@ -18,7 +18,6 @@ import {
   Paper,
   Typography,
   Container,
-  CircularProgress,
   Alert,
   Button,
   TextField,
@@ -27,6 +26,8 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Tooltip,
+  LinearProgress,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { Delete } from "@mui/icons-material";
@@ -40,7 +41,7 @@ const Dashboard = () => {
 
   // Modal state and mode
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogMode, setDialogMode] = useState("add"); // "add", "view", "update", or "delete"
+  const [dialogMode, setDialogMode] = useState("add");
 
   // User data for dialog actions
   const [formData, setFormData] = useState({
@@ -58,7 +59,7 @@ const Dashboard = () => {
       try {
         const data = await getClientData();
         setUsers(data);
-        setFilteredUsers(data); // Initialize filtered users with the full list
+        setFilteredUsers(data); 
       } catch (err) {
         setError("Failed to fetch users. Please try again later.");
       } finally {
@@ -175,7 +176,7 @@ const Dashboard = () => {
         <Typography variant="h4" component="h1" gutterBottom>
           User Dashboard
         </Typography>
-        <CircularProgress />
+        <LinearProgress />
       </Container>
     );
   }
@@ -198,7 +199,10 @@ const Dashboard = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "1rem",
+          marginTop: "6rem",
+          borderRadius: "10px",
+          padding: "0 10px",
+          
         }}
       >
         <Typography variant="h3" component="h1" gutterBottom>
@@ -220,11 +224,10 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      <TableContainer component={Paper} maxHeight={'300px'}>
+      <TableContainer component={Paper} sx={{ height: "60vh" }}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
               <TableCell>First Name</TableCell>
               <TableCell>Last Name</TableCell>
               <TableCell>Phone</TableCell>
@@ -238,25 +241,28 @@ const Dashboard = () => {
                 onClick={() => handleRowClick(user.id)}
                 style={{ cursor: "pointer" }}
               >
-                <TableCell>{user.id}</TableCell>
                 <TableCell>{user.firstName}</TableCell>
                 <TableCell>{user.lastName}</TableCell>
                 <TableCell>{user.phone}</TableCell>
                 <TableCell
                   onClick={(e) => e.stopPropagation()} // Prevent click event propagation for actions
                 >
+                  <Tooltip title="Edit" arrow>
                   <IconButton
                     onClick={() => openDialog("update", user)}
                     color="primary"
                   >
                     <EditNoteIcon />
                   </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete" arrow>
                   <IconButton
                     onClick={() => openDialog("delete", user)}
                     color="secondary"
                   >
                     <Delete sx={{ color: "#cf0808" }} />
                   </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
