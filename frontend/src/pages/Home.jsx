@@ -90,7 +90,6 @@ const Dashboard = () => {
     setDialogMode(mode);
     setFormData(
       data || {
-        id: null,
         firstName: "",
         lastName: "",
         phone: "",
@@ -106,7 +105,6 @@ const Dashboard = () => {
   const closeDialog = () => {
     setDialogOpen(false);
     setFormData({
-      id: null,
       firstName: "",
       lastName: "",
       phone: "",
