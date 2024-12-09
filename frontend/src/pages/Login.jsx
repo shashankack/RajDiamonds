@@ -23,6 +23,7 @@ const Login = ({ setAuthorized }) => {
     try {
       const response = await axios.post(
         "https://rajdiamonds-backend.onrender.com/api/v1/token/",
+        /* "http://localhost:8000/api/v1/token/", */
         {
           email,
           password,

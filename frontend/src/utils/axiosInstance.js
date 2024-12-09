@@ -2,6 +2,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
     baseURL: "https://rajdiamonds-backend.onrender.com/api/v1/",
+    /* baseURL: "http://localhost:8000/api/v1/", */
 });
 
 axiosInstance.interceptors.request.use(async (config) => {
@@ -22,6 +23,8 @@ axiosInstance.interceptors.response.use(
             try {
                 const response = await axios.post(
                     "https://rajdiamonds-backend.onrender.com/api/v1/token/refresh/",
+                    /* "http://localhost:8000/api/v1/token/refresh/", */
+
                     { refresh: refreshToken }
                 );
                 const { access } = response.data;

@@ -44,7 +44,6 @@ const Dashboard = () => {
 
   // User data for dialog actions
   const [formData, setFormData] = useState({
-    id: null,
     firstName: "",
     lastName: "",
     phone: "",
@@ -223,7 +222,7 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} maxHeight={'300px'}>
         <Table>
           <TableHead>
             <TableRow>
@@ -321,6 +320,7 @@ const Dashboard = () => {
               <Grid item xs={6}>
                 <TextField
                   label="Sales"
+                  type="number"
                   name="sales"
                   fullWidth
                   value={formData.sales}
