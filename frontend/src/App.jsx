@@ -13,13 +13,15 @@ import { ThemeProvider, createTheme } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 
 const App = () => {
-  const [isAuthorized, setAuthorized] = useState(false);
+  const [isAuthorized, setAuthorized] = useState(
+    !!localStorage.getItem("access_token") // Initialize from localStorage
+  );
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("themeMode");
     if (savedTheme === "dark") {
-      setDarkMode(savedTheme === "dark");
+      setDarkMode(true);
     }
   }, []);
 
@@ -40,16 +42,25 @@ const App = () => {
     setDarkMode(!darkMode);
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    setAuthorized(!!token);
-  }, []);
+  const handleLogin = () => {
+    setAuthorized(true);
+    localStorage.setItem("access_token", "your_token_here"); // Set token after login
+  };
+
+  const handleLogout = () => {
+    setAuthorized(false);
+    localStorage.removeItem("access_token"); // Remove token on logout
+  };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        <Header onToggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+        <Header
+          onToggleDarkMode={toggleDarkMode}
+          darkMode={darkMode}
+          onLogout={handleLogout}
+        />
         <Routes>
           {/* Redirect / to either /home or /login */}
           <Route
@@ -64,7 +75,7 @@ const App = () => {
           />
           <Route
             path="/login"
-            element={<Login setAuthorized={setAuthorized} />}
+            element={<Login setAuthorized={handleLogin} />}
           />
           <Route
             path="/home"

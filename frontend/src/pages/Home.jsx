@@ -7,7 +7,6 @@ import {
   deleteClient,
 } from "../utils/api";
 import EditNoteIcon from "@mui/icons-material/EditNote";
-
 import {
   Table,
   TableBody,
@@ -48,7 +47,7 @@ const Dashboard = () => {
     firstName: "",
     lastName: "",
     phone: "",
-    sales: "",
+    sales: 0.0,
     email: "",
     address: "",
   });
@@ -59,7 +58,7 @@ const Dashboard = () => {
       try {
         const data = await getClientData();
         setUsers(data);
-        setFilteredUsers(data); 
+        setFilteredUsers(data);
       } catch (err) {
         setError("Failed to fetch users. Please try again later.");
       } finally {
@@ -94,7 +93,7 @@ const Dashboard = () => {
         firstName: "",
         lastName: "",
         phone: "",
-        sales: "",
+        sales: 0.0,
         email: "",
         address: "",
       }
@@ -109,7 +108,7 @@ const Dashboard = () => {
       firstName: "",
       lastName: "",
       phone: "",
-      sales: "",
+      sales: 0.0,
       email: "",
       address: "",
     });
@@ -117,9 +116,11 @@ const Dashboard = () => {
 
   // Handle input change in the dialog
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]:
+        name === "sales" ? parseFloat(parseFloat(value).toFixed(2)) : value, // Parse sales to float with 2 decimal places
     });
   };
 
@@ -202,7 +203,6 @@ const Dashboard = () => {
           marginTop: "6rem",
           borderRadius: "10px",
           padding: "0 10px",
-          
         }}
       >
         <Typography variant="h3" component="h1" gutterBottom>
@@ -248,20 +248,20 @@ const Dashboard = () => {
                   onClick={(e) => e.stopPropagation()} // Prevent click event propagation for actions
                 >
                   <Tooltip title="Edit" arrow>
-                  <IconButton
-                    onClick={() => openDialog("update", user)}
-                    color="primary"
-                  >
-                    <EditNoteIcon />
-                  </IconButton>
+                    <IconButton
+                      onClick={() => openDialog("update", user)}
+                      color="primary"
+                    >
+                      <EditNoteIcon />
+                    </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete" arrow>
-                  <IconButton
-                    onClick={() => openDialog("delete", user)}
-                    color="secondary"
-                  >
-                    <Delete sx={{ color: "#cf0808" }} />
-                  </IconButton>
+                    <IconButton
+                      onClick={() => openDialog("delete", user)}
+                      color="secondary"
+                    >
+                      <Delete sx={{ color: "#cf0808" }} />
+                    </IconButton>
                   </Tooltip>
                 </TableCell>
               </TableRow>
@@ -330,6 +330,11 @@ const Dashboard = () => {
                   value={formData.sales}
                   onChange={handleChange}
                   disabled={dialogMode === "view"}
+                  InputProps={{
+                    inputProps: {
+                      step: "0.01",
+                    },
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
